@@ -416,16 +416,32 @@ class MainWindow(QMainWindow):
                 self.path_to_goal = solver.path_to_goal
             
             elif algorithm == "DFS":
-                solver = DFS(self.initial_state, goal)
-                solver.DFS_Algorithm()
-                self.path , cost, nodes_expanded, depth = solver.Path , solver.Cost , solver.expanded_nodes , solver.depth  
-                self.path_to_goal = solver.moves
-            
+                    solver = DFS(self.initial_state, goal)
+                    result = solver.DFS_Algorithm() 
+                    
+                    if result == 1:  # Success
+                        self.path = solver.Path
+                        cost = solver.Cost
+                        nodes_expanded = len(solver.expanded_nodes)
+                        depth = solver.depth
+                        self.path_to_goal = solver.moves
+                    else:
+                        QMessageBox.information(self, "No Solution", "DFS could not find a solution!")
+                        return  
+
             elif algorithm == "Iterative DFS":
-                solver = IDS(self.initial_state , goal)
-                solver.IDS_search()
-                self.path , cost, nodes_expanded, depth = solver.Path , solver.Cost , solver.expanded_nodes , solver.depth  
-                self.path_to_goal = solver.moves
+                    solver = IDS(self.initial_state, goal)
+                    result = solver.IDS_search()  
+                    
+                    if result == 1:  
+                        self.path = solver.Path
+                        cost = solver.Cost
+                        nodes_expanded = len(solver.expanded_nodes)
+                        depth = solver.depth
+                        self.path_to_goal = solver.moves
+                    else:
+                        QMessageBox.information(self, "No Solution", "IDS could not find a solution!")
+                        return
             
             elif "A*" in algorithm:
                 if "Manhattan" in algorithm:
@@ -439,9 +455,7 @@ class MainWindow(QMainWindow):
                 self.path, cost, nodes_expanded, depth, self.path_to_goal = solver.AStar_Algorithm(heuristic_func)   
             end_time = time.time()
             
-            # Update display
-            if algorithm == "BFS" or algorithm == "DFS":
-                self.display_results(cost, nodes_expanded, depth, end_time - start_time)
+            self.display_results(cost, nodes_expanded, depth, end_time - start_time)
             
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
